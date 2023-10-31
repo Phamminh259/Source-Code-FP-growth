@@ -1,0 +1,30 @@
+from pyspark.sql import SparkSession
+from pyspark.ml.fpm import FPGrowth
+from pyspark.sql.functions import collect_list
+spark = SparkSession.builder.appName("FPGrowthExample").getOrCreate()
+data = spark.read.csv("F:/sale.csv", header=True, inferSchema=True)
+data = data.groupBy("Contact Name", "Product").count()
+user_items = data.groupBy("Contact Name").agg(collect_list("Product").alias("items"))
+fp_growth = FPGrowth(itemsCol="items", minSupport=0.2, minConfidence=0.6)
+model = fp_growth.fit(user_items)
+model.freqItemsets.show()
+output_path = "F:/most_frequent1_buyers.csv"
+most_frequent_buyers = most_frequent_buyers.withColumn("items", expr("concat_ws(',', items)"))
+most_frequent_buyers = most_frequent_buyers.withColumn("prediction", expr("concat_ws(',', prediction)"))
+most_frequent_buyers.write.csv(output_path, header=True)
+model.associationRules.show()
+most_frequent_buyers = model.transform(user_items)
+most_frequent_buyers.show()
+most_frequent_buyers = most_frequent_buyers.withColumn("prediction", expr("concat_ws(',', prediction)"))
+output_path = "F:/ten_tep.csv"
+most_frequent_buyers.write.csv(output_path, header=True)
+most_frequent_buyers.show()
+model.transform(user_items).select("Contact Name", "prediction").show()
+from pyspark.sql.functions import collect_list, concat_ws
+prediction_result = model.transform(user_items).select("Contact Name", "items")
+prediction_result = prediction_result.withColumn("items", concat_ws(", ", "items"))
+output_path = "F:/outpu33t.csv"
+prediction_result.write.csv(output_path, header=True)
+
+
+
