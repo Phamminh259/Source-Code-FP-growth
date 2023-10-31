@@ -1,0 +1,13 @@
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import split
+from pyspark.ml.fpm import FPGrowth
+spark = SparkSession.builder.appName("FP-Growth-Example").getOrCreate()
+data = spark.read.csv("F:/sale.csv", header=True, inferSchema=True)
+data = data.withColumn("Product", split(data["Product"], ","))
+thomas_hodges_data = data.filter(data["Contact Name"] == "Thomas Hodges")
+fp_growth = FPGrowth(itemsCol="Product", minSupport=0.1, minConfidence=0.5)
+model = fp_growth.fit(thomas_hodges_data)
+frequent_itemsets = model.freqItemsets
+frequent_itemsets.show()
+
+
